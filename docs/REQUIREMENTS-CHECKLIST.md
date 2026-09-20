@@ -1,0 +1,21 @@
+# Requirements Checklist
+
+- [ ] Public/private items
+- [ ] User item CRUD
+- [ ] Admin item management
+- [ ] Collections/groupings
+- [ ] Public/private collections
+- [ ] Public browsing
+- [ ] Two search parameters
+- [ ] LIKE/partial search
+- [ ] Item sorting by two fields ASC/DESC
+- [ ] Collection sorting by two fields ASC/DESC
+- [ ] Spring Boot REST API
+- [ ] Role-based authorization
+- [ ] Three or more React pages
+- [ ] React Router
+- [ ] Reusable React components
+- [ ] 50%+ backend tests
+- [ ] 50%+ frontend tests
+- [ ] MySQL schema with PK/FK relationships
+- [ ] Fresh clone builds and runs
