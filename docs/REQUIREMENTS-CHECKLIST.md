@@ -1,21 +1,24 @@
 # Requirements Checklist
 
-- [ ] Public/private items
-- [ ] User item CRUD
-- [ ] Admin item management
-- [ ] Collections/groupings
-- [ ] Public/private collections
-- [ ] Public browsing
-- [ ] Two search parameters
-- [ ] LIKE/partial search
-- [ ] Item sorting by two fields ASC/DESC
-- [ ] Collection sorting by two fields ASC/DESC
-- [ ] Spring Boot REST API
-- [ ] Role-based authorization
-- [ ] Three or more React pages
-- [ ] React Router
-- [ ] Reusable React components
-- [ ] 50%+ backend tests
-- [ ] 50%+ frontend tests
-- [ ] MySQL schema with PK/FK relationships
-- [ ] Fresh clone builds and runs
+Implemented in this review branch:
+
+- [x] Public/private items
+- [x] User item CRUD
+- [x] Admin item access through role checks
+- [x] Collections/groupings
+- [x] Public/private collections
+- [x] Public browsing
+- [x] Multiple search parameters
+- [x] LIKE/partial item and collection search
+- [x] Item sorting by multiple fields ASC/DESC
+- [x] Collection sorting by multiple fields ASC/DESC
+- [x] Spring Boot REST API
+- [x] Role-based authorization
+- [x] Three or more React pages
+- [x] React Router
+- [x] Reusable React components
+- [x] MySQL schema with PK/FK relationships
+- [x] Fresh-clone build commands documented
+- [ ] Confirm backend test coverage percentage
+- [ ] Confirm frontend React/JS test coverage percentage
+- [ ] Run complete MySQL-backed browser walkthrough locally
