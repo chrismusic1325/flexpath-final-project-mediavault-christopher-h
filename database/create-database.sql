@@ -64,6 +64,24 @@ CREATE TABLE collection_items (
         ON DELETE CASCADE
 );
 
+CREATE INDEX idx_media_items_title
+    ON media_items(title);
+
+CREATE INDEX idx_media_items_creator
+    ON media_items(creator);
+
+CREATE INDEX idx_media_items_type
+    ON media_items(media_type);
+
+CREATE INDEX idx_media_items_owner_visibility
+    ON media_items(owner, is_public);
+
+CREATE INDEX idx_media_collections_name
+    ON media_collections(name);
+
+CREATE INDEX idx_media_collections_owner_visibility
+    ON media_collections(owner, is_public);
+
 INSERT INTO users (username, password) VALUES
 ('admin', '$2a$10$tBTfzHzjmQVKza3VSa5lsOX6/iL93xPVLlLXYg2FhT6a.jb1o6VDq'),
 ('user', '$2a$10$tBTfzHzjmQVKza3VSa5lsOX6/iL93xPVLlLXYg2FhT6a.jb1o6VDq');

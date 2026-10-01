@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand --coverage"
   },
   "dependencies": {
     "jest": "^29.7.0",
@@ -30,5 +30,24 @@
     "globals": "^15.11.0",
     "react-test-renderer": "^18.3.1",
     "vite": "^5.4.10"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/main.jsx",
+      "!src/**/*.test.{js,jsx}"
+    ],
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "lines": 70,
+        "statements": 70,
+        "functions": 70
+      }
+    }
   }
 }
