@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useEffect,
   useState,
@@ -241,6 +241,37 @@ export default function CollectionsPage() {
     }
   }
 
+  async function removeItemFromCollection(
+    collectionId
+  ) {
+    const itemId =
+      window.prompt(
+        "Enter the Media Item ID to remove:"
+      );
+
+    if (!itemId) {
+      return;
+    }
+
+    try {
+      await api(
+        `/api/collections/${collectionId}/items/${Number(itemId)}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      setMessage(
+        "Item removed from collection."
+      );
+
+    } catch (error) {
+      setMessage(
+        error.message
+      );
+    }
+  }
+
   async function viewItems(
     collectionId
   ) {
@@ -453,6 +484,16 @@ export default function CollectionsPage() {
                   }
                 >
                   Add item
+                </button>
+
+                <button
+                  onClick={() =>
+                    removeItemFromCollection(
+                      collection.id
+                    )
+                  }
+                >
+                  Remove item
                 </button>
 
                 <button

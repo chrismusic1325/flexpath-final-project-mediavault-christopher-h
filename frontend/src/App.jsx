@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Navigate,
   Route,
@@ -6,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import NavBar from "./components/NavBar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import ItemsPage from "./pages/ItemsPage";
@@ -34,12 +34,20 @@ export default function App() {
 
           <Route
             path="/items"
-            element={<ItemsPage />}
+            element={
+              <ProtectedRoute>
+                <ItemsPage />
+              </ProtectedRoute>
+            }
           />
 
           <Route
             path="/collections"
-            element={<CollectionsPage />}
+            element={
+              <ProtectedRoute>
+                <CollectionsPage />
+              </ProtectedRoute>
+            }
           />
 
           <Route
@@ -49,7 +57,11 @@ export default function App() {
 
           <Route
             path="/admin"
-            element={<AdminPage />}
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            }
           />
 
           <Route
