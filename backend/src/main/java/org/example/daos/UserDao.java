@@ -13,148 +13,115 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Data access object for users.
- */
 @Component
 public class UserDao {
-    /**
-     * The JDBC template for querying the database.
-     */
     private final JdbcTemplate jdbcTemplate;
-
-    /**
-     * The password encoder for the DAO.
-     */
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Creates a new user data access object.
-     *
-     * @param dataSource The data source for the DAO.
-     * @param passwordEncoder The password encoder for the DAO.
-     */
     public UserDao(DataSource dataSource, PasswordEncoder passwordEncoder) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * Gets all users.
-     *
-     * @return List of User
-     */
     public List<User> getUsers() {
-        return jdbcTemplate.query("SELECT * FROM users ORDER BY username;", this::mapToUser);
+        return jdbcTemplate.query(
+                "SELECT username, password FROM users ORDER BY username",
+                this::mapToUser);
     }
 
-    /**
-     * Gets a user by username.
-     *
-     * @param username The username of the user.
-     * @return User
-     */
     public User getUserByUsername(String username) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM users WHERE username = ?", this::mapToUser, username);
+            return jdbcTemplate.queryForObject(
+                    "SELECT username, password FROM users WHERE username = ?",
+                    this::mapToUser,
+                    username);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
-    /**
-     * Creates a new user.
-     * @param user The user to create.
-     * @return User The created user.
-     */
     public User createUser(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        String sql = "INSERT INTO users (username, password) VALUES (?,?);";
+        if (user == null ||
+                user.getUsername() == null ||
+                user.getUsername().isBlank() ||
+                user.getPassword() == null ||
+                user.getPassword().isBlank()) {
+            throw new DaoException("Username and password are required.");
+        }
+
         try {
-            jdbcTemplate.update(sql, user.getUsername(), hashedPassword);
+            String encodedPassword =
+                    passwordEncoder.encode(user.getPassword());
+
+            jdbcTemplate.update(
+                    "INSERT INTO users (username, password) VALUES (?, ?)",
+                    user.getUsername(),
+                    encodedPassword);
+
+            jdbcTemplate.update(
+                    "INSERT INTO roles (username, role) VALUES (?, 'USER')",
+                    user.getUsername());
+
             return getUserByUsername(user.getUsername());
-        } catch (EmptyResultDataAccessException e) {
-            throw new DaoException("Failed to create user.");
+
+        } catch (DataAccessException e) {
+            throw new DaoException("Unable to create user.");
         }
     }
 
-    /**
-     * Updates a user's password.
-     *
-     * @param user The user to update.
-     * @return User
-     */
     public User updatePassword(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        String sql = "UPDATE users SET password = ? WHERE username = ?";
-        int rowsAffected = jdbcTemplate.update(sql, hashedPassword, user.getUsername());
-        if (rowsAffected == 0) {
-            throw new DaoException("Zero rows affected, expected at least one.");
-        } else {
-            return getUserByUsername(user.getUsername());
+        String encodedPassword =
+                passwordEncoder.encode(user.getPassword());
+
+        int count = jdbcTemplate.update(
+                "UPDATE users SET password = ? WHERE username = ?",
+                encodedPassword,
+                user.getUsername());
+
+        if (count == 0) {
+            throw new DaoException("User was not found.");
         }
+
+        return getUserByUsername(user.getUsername());
     }
 
-    /**
-     * Deletes a user.
-     *
-     * @param username The username of the user.
-     */
     public int deleteUser(String username) {
-        String sql = "DELETE FROM users WHERE username = ? ";
-        return jdbcTemplate.update(sql, username);
+        return jdbcTemplate.update(
+                "DELETE FROM users WHERE username = ?",
+                username);
     }
 
-    /**
-     * Gets all roles for a user.
-     *
-     * @param username The username of the user.
-     * @return List of String
-     */
     public List<String> getRoles(String username) {
-        return jdbcTemplate.queryForList("SELECT role FROM roles WHERE username = ?;", String.class, username);
+        return jdbcTemplate.queryForList(
+                "SELECT role FROM roles WHERE username = ? ORDER BY role",
+                String.class,
+                username);
     }
 
-    /**
-     * Adds a role to a user.
-     *
-     * @param username The username of the user.
-     * @param role The role to add.
-     * @return List of String
-     */
     public List<String> addRole(String username, String role) {
         try {
-            String sql = "INSERT INTO roles (username, role) VALUES (?,?)";
-            jdbcTemplate.update(sql, username, role);
-        } catch (DataAccessException e) {
+            jdbcTemplate.update(
+                    "INSERT INTO roles (username, role) VALUES (?, ?)",
+                    username,
+                    role);
+        } catch (DataAccessException ignored) {
         }
+
         return getRoles(username);
     }
 
-    /**
-     * Deletes a role from a user.
-     *
-     * @param username The username of the user.
-     * @param role The role to delete.
-     */
     public int deleteRole(String username, String role) {
-        String sql = "DELETE FROM roles WHERE username = ? AND role = ?";
-        return jdbcTemplate.update(sql, username, role);
+        return jdbcTemplate.update(
+                "DELETE FROM roles WHERE username = ? AND role = ?",
+                username,
+                role);
     }
 
-    /**
-     * Maps a row in the ResultSet to a User object.
-     *
-     * @param resultSet The result set to map.
-     * @param rowNumber The row number.
-     * @return User The user object.
-     * @throws SQLException If an error occurs while mapping the result set.
-     */
-    private User mapToUser(ResultSet resultSet, int rowNumber) throws SQLException {
-        String username = resultSet.getString("username");
+    private User mapToUser(ResultSet resultSet, int row)
+            throws SQLException {
+
         return new User(
-                username,
-                resultSet.getString("password")
-        );
+                resultSet.getString("username"),
+                resultSet.getString("password"));
     }
 }
